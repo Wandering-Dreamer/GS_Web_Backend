@@ -16,6 +16,41 @@ db.serialize(() => {
     password TEXT NOT NULL,
     role TEXT NOT NULL
   )`);
+
+  // Criar a tabela de consultas
+  db.run(`
+    CREATE TABLE IF NOT EXISTS preferences (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER,
+      chargerType TEXT,
+      preferredTime TEXT
+    )
+  `);
 });
+
+const savePreferences = (userId, chargerType, preferredTime, callback) => {
+    db.run(
+      `INSERT INTO preferences (userId, chargerType, preferredTime) VALUES (?, ?, ?)`,
+      [userId, chargerType, preferredTime],
+      function (err) {
+        callback(err, { id: this.lastID });
+      }
+    );
+  };
+  
+  const getPreferences = (userId, callback) => {
+    db.get(
+      `SELECT * FROM preferences WHERE userId = ? ORDER BY id DESC LIMIT 1`,
+      [userId],
+      (err, row) => {
+        callback(err, row);
+      }
+    );
+  };
+  
+  module.exports = {
+    savePreferences,
+    getPreferences,
+  };
 
 module.exports = db;

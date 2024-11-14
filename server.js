@@ -1,16 +1,15 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const authRoutes = require('./routes/auth');
 
 const app = express();
-const PORT = 3000;
+const preferencesRoutes = require('./routes/preferences');
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use('/api/preferences', preferencesRoutes);
 
-// Usar as rotas de autenticação
-app.use('/api/auth', authRoutes);
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
