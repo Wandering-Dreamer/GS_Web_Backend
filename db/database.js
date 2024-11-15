@@ -19,18 +19,20 @@ db.serialize(() => {
 
   // Criar a tabela de consultas
   db.run(`
-    CREATE TABLE IF NOT EXISTS preferences (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      chargerType TEXT,
-      preferredTime TEXT
-    )
+CREATE TABLE IF NOT EXISTS preferences (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  charger_type TEXT NOT NULL,
+  preferred_time TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
   `);
 });
 
+
 const savePreferences = (userId, chargerType, preferredTime, callback) => {
     db.run(
-      `INSERT INTO preferences (userId, chargerType, preferredTime) VALUES (?, ?, ?)`,
+      `INSERT INTO preferences (user_id, chargerType, preferredTime) VALUES (?, ?, ?)`,
       [userId, chargerType, preferredTime],
       function (err) {
         callback(err, { id: this.lastID });

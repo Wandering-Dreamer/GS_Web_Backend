@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const preferencesModel = require('../models/preferencesModel');
+const preferencesModel = require('../models/preferencesModel.js');
 
 // Endpoint para salvar as preferências do usuário
 router.post('/save', (req, res) => {
@@ -17,16 +17,19 @@ router.post('/save', (req, res) => {
 
 // Endpoint para obter as preferências do usuário
 router.get('/:userId', (req, res) => {
-  const userId = req.params.userId;
-
-  preferencesModel.getPreferences(userId, (err, preferences) => {
+  const { userId } = req.params;
+  const query = 'SELECT charger_type, preferred_time FROM preferences WHERE user_id = ?';
+  
+  db.get(query, [userId], (err, row) => {
     if (err) {
-      res.status(500).json({ error: 'Erro ao obter preferências' });
-    } else if (!preferences) {
-      res.status(404).json({ message: 'Preferências não encontradas' });
-    } else {
-      res.status(200).json(preferences);
+      return res.status(500).json({ error: 'Erro ao buscar preferências' });
     }
+    
+    if (!row) {
+      return res.status(404).json({ error: 'Preferências não encontradas' });
+    }
+    
+    res.json(row);
   });
 });
 
