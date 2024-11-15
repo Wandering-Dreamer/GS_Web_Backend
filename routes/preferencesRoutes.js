@@ -18,17 +18,16 @@ router.post('/save', (req, res) => {
 // Endpoint para obter as preferências do usuário
 router.get('/:userId', (req, res) => {
   const { userId } = req.params;
-  const query = 'SELECT charger_type, preferred_time FROM preferences WHERE user_id = ?';
-  
-  db.get(query, [userId], (err, row) => {
+
+  preferencesModel.getPreferences(userId, (err, row) => {
     if (err) {
       return res.status(500).json({ error: 'Erro ao buscar preferências' });
     }
-    
+
     if (!row) {
       return res.status(404).json({ error: 'Preferências não encontradas' });
     }
-    
+
     res.json(row);
   });
 });
